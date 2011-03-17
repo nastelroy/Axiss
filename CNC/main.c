@@ -119,7 +119,7 @@ static portTASK_FUNCTION(task_serial, pvParameters )
     {
 	  	if (xSerialGetChar(1, &c, 100 ) == pdTRUE)
 	  	{
-	  		vSerialPutString(0, "Tombol ditekan = ");
+	  		vSerialPutString(0, "Tombol dipencet = ");
 	  		xSerialPutChar(	0, (char ) c);
 	  		vSerialPutString(0, " \r\n");
 	  	}
