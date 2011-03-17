@@ -1,12 +1,4 @@
-/*
-	FreeRTOS.org V5.1.1 - Copyright (C) 2003-2008 Richard Barry.
-	
-	17 MAret 2011
-	* microstepping 5 fasa 
-	* applying sine wave at each step-->menggunakan PWM di INH1 s/d INH5
-*/
 
-/* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -135,47 +127,6 @@ void init_task_serial(void)
 
 
 
-
-void cnc(void)
-{
-	int a=0;
-	FIO1DIR = FASA1;
-	
-	FIO2DIR |= ~(0x800);
-	FIO2PIN = 0x800;
-	
-	
-	
-	FIO1SET = FASA1;
-	printf("blink \n\r");
-	dele(1000000);
-	
-	FIO1CLR = FASA1;
-	printf("blink \n\r");
-	dele(1000000);
-	
-	
-	
-	while(1)
-	{
-		
-		if (FIO2PIN & 0x800) //high
-		{
-			FIO1CLR = FASA1;
-
-		}
-		else
-		{
-			FIO1SET= FASA1;
-			
-		}
-		
-		vTaskDelay(1);
-	}
-	
-}
-
-
 static portTASK_FUNCTION(task_cnc, pvParameters )
 {
 	cnc();
@@ -198,3 +149,90 @@ void init_task_cnc(void)
 
 
 
+
+void cnc(void)
+{
+	int a=0;
+	FIO1DIR = FASA1;
+	
+	FIO1SET = FASA1;
+	printf("blink \n\r");
+	dele(1000000);
+	
+	FIO1CLR = FASA1;
+	printf("blink \n\r");
+	dele(1000000);
+	
+	EXTINT = 0x00000003;  
+	init_irq();
+	
+	while(1)
+	{
+		
+		vTaskDelay(500);
+	}
+	
+}
+
+void init_irq()
+	
+{ 
+	//int i,k;
+	extern void (EXTINTVectoredIRQ)(void);
+	
+	/*setting PINSEL shg menjadi mode Ext interupt
+	 * set VICVectCntl0 
+	 * 
+	 * 
+	 * 
+	 */
+	PINSEL4 = 0x400000; 
+	VICVectCntl0 = 0x0F;
+	VICVectAddr0 = (unsigned)EXTINTVectoredIRQ;
+	VICIntEnable = 0x8000;
+	printf("init IRQ \n\r");
+	
+	
+}
+
+void EXTINTVectoredIRQ(void)
+{
+	
+	int pulsa;
+	pulsa++;
+	if (FIO2PIN & FASA2)
+	{
+		if (pulsa == 1)
+ 				{
+ 					IOSET0 = FASA1;
+ 				}
+ 				else if (pulsa == 2)
+ 				{
+ 					IOSET0 = FASA1;
+ 				}
+ 				else if (pulsa == 3)
+ 				{
+ 					IOSET0 = FASA1;
+			}
+	}
+		else
+		{
+			IOCLR0 |= FASA1;
+		}
+		
+     /*NOTE:
+          EINT1
+          -----------------------------------------------------------------
+          In level-sensitive mode, this bit is set if the EINT1 function is
+          selected for its pin, and the pin is in its active state. In
+          edge-sensitive mode, this bit is set if the EINT1 function is
+          selected for its pin, and the selected edge occurs on the pin.
+     */
+     //Clear the peripheral interrupt flag
+     EXTINT = 0x00000003;                           
+
+     //Dummy write to signal end of interrupt
+     //VICVectAddr = 0x00000000;
+
+	
+}

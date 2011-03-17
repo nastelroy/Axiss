@@ -82,7 +82,7 @@ THUMB_SOURCE= \
 ARM_SOURCE= \
 		$(RTOS_SOURCE_DIR)/portable/GCC/ARM7_LPC23xx/portISR.c \
 		../system/serial/serialISR.c \
-		
+#		gpio_ISR.c \
 
 THUMB_OBJS = $(THUMB_SOURCE:.c=.o)
 ARM_OBJS = $(ARM_SOURCE:.c=.o)
