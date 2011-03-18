@@ -1,3 +1,14 @@
+/*	Fana Akbarkan
+ * 
+ * 
+ * 
+ * Jakarta, 18 Maret 2011
+ * Microstep , tapi masih sampe interrupt
+ * 
+ * 
+ * 
+ * 
+ */
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -89,7 +100,7 @@ static portTASK_FUNCTION(task_led, pvParameters )
 	for (;;)
 	{
 		togle_led_utama();
-		vTaskDelay(500);
+		vTaskDelay(1000);
 	}
 }
 void init_led_utama(void)
@@ -115,6 +126,7 @@ static portTASK_FUNCTION(task_serial, pvParameters )
 	  		vSerialPutString(0, "dipencet = ");
 	  		xSerialPutChar(	0, (char ) c);
 	  		vSerialPutString(0, " \r\n");
+	  		
 	  	}
 	}
 }
@@ -136,14 +148,14 @@ static portTASK_FUNCTION(task_cnc, pvParameters )
 	{
 		
 		
-		vTaskDelay(5000);
+		vTaskDelay(1);
 	}
 	
 }
 
 void init_task_cnc(void)
 {
-	xTaskCreate(task_cnc, ( signed portCHAR * ) "cnc",  (configMINIMAL_STACK_SIZE * 2) ,\
+	xTaskCreate(task_cnc, ( signed portCHAR * ) "cnc_task",  (configMINIMAL_STACK_SIZE * 2) ,\
 		 NULL, tskIDLE_PRIORITY - 2, ( xTaskHandle * ) NULL );
 }
 
@@ -169,12 +181,15 @@ void cnc(void)
 	
 	while(1)
 	{
+		/*
 		FIO1PIN = FASA1;
 		dele(1000000);
 		printf("hidup\n\r");
 		FIO1PIN = ~FASA1 ;
 		dele(1000000);
 		printf("mati\n\r");
+		vTaskDelay(10);
+		*/
 		vTaskDelay(10);
 	}
 	

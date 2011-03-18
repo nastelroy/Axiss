@@ -122,6 +122,9 @@ tulis :
 
 tulis1 :
 	$(PENULIS) -hex $(NAMA_FILE).hex /dev/ttyUSB1 115200 14748
+	
+tulis5 :
+	$(PENULIS) -hex $(NAMA_FILE).hex /dev/ttyUSB5 115200 14748
 		
 MSG_SIZE_BEFORE = Size before: 
 MSG_SIZE_AFTER = Size after:
