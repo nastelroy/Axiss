@@ -3,6 +3,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "gpio.c"
 
 #define BAUD_RATE	( ( unsigned portLONG ) 115200 )
 #define LED_UTAMA	BIT(26)
@@ -163,76 +164,19 @@ void cnc(void)
 	printf("blink \n\r");
 	dele(1000000);
 	
-	EXTINT = 0x00000003;  
+	EXTINT = 0xFF;  
 	init_irq();
 	
 	while(1)
 	{
-		
-		vTaskDelay(500);
+		FIO1PIN = FASA1;
+		dele(10000000);
+		printf("hidup\n\r");
+		FIO1PIN = ~FASA1 ;
+		dele(10000000);
+		printf("mati\n\r");
+		vTaskDelay(10);
 	}
 	
 }
 
-void init_irq()
-	
-{ 
-	//int i,k;
-	extern void (EXTINTVectoredIRQ)(void);
-	
-	/*setting PINSEL shg menjadi mode Ext interupt
-	 * set VICVectCntl0 
-	 * 
-	 * 
-	 * 
-	 */
-	PINSEL4 = 0x400000; 
-	VICVectCntl0 = 0x0F;
-	VICVectAddr0 = (unsigned)EXTINTVectoredIRQ;
-	VICIntEnable = 0x8000;
-	printf("init IRQ \n\r");
-	
-	
-}
-
-void EXTINTVectoredIRQ(void)
-{
-	
-	int pulsa;
-	pulsa++;
-	if (FIO2PIN & FASA2)
-	{
-		if (pulsa == 1)
- 				{
- 					IOSET0 = FASA1;
- 				}
- 				else if (pulsa == 2)
- 				{
- 					IOSET0 = FASA1;
- 				}
- 				else if (pulsa == 3)
- 				{
- 					IOSET0 = FASA1;
-			}
-	}
-		else
-		{
-			IOCLR0 |= FASA1;
-		}
-		
-     /*NOTE:
-          EINT1
-          -----------------------------------------------------------------
-          In level-sensitive mode, this bit is set if the EINT1 function is
-          selected for its pin, and the pin is in its active state. In
-          edge-sensitive mode, this bit is set if the EINT1 function is
-          selected for its pin, and the selected edge occurs on the pin.
-     */
-     //Clear the peripheral interrupt flag
-     EXTINT = 0x00000003;                           
-
-     //Dummy write to signal end of interrupt
-     //VICVectAddr = 0x00000000;
-
-	
-}
