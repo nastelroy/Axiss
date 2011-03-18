@@ -164,16 +164,16 @@ void cnc(void)
 	printf("blink \n\r");
 	dele(1000000);
 	
-	EXTINT = 0xFF;  
+	
 	init_irq();
 	
 	while(1)
 	{
 		FIO1PIN = FASA1;
-		dele(10000000);
+		dele(1000000);
 		printf("hidup\n\r");
 		FIO1PIN = ~FASA1 ;
-		dele(10000000);
+		dele(1000000);
 		printf("mati\n\r");
 		vTaskDelay(10);
 	}
