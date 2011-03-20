@@ -22,20 +22,10 @@
 #define FASA1 BIT(21)
 #define FASA2 BIT(11)
 #define SWPIN 11
-#define FASA3
-#define FASA4
-#define FASA5
-
-#define INH1
-#define INH2
-#define INH3
-#define INH4
-#define INH5
 
 static int tog;
 
 /*-----------------------------------------------------------*/
-#define jalankan
 
 
 
@@ -59,23 +49,27 @@ void dele(int dd)
 int main( void )
 {
 	sysInit();
-
+	
+	
 	FIO0DIR = LED_UTAMA;
 	FIO0CLR = LED_UTAMA;	
 
 	xSerialPortInitMinimal( BAUD_RATE, configMINIMAL_STACK_SIZE  );
 
-#ifdef jalankan
 	init_led_utama();
 	init_task_serial();
 	init_task_cnc();
+	init_irq();
 	
 	vTaskStartScheduler();
+	while (1)
+	{
+		
+	}
 
     /* Will only get here if there was insufficient memory to create the idle
     task. */
 	return 0;
-#endif
 }
 
 
@@ -169,27 +163,17 @@ void cnc(void)
 	FIO1DIR = FASA1;
 	
 	FIO1SET = FASA1;
-	printf("blink \n\r");
+	//printf("blink \n\r");
 	dele(1000000);
 	
 	FIO1CLR = FASA1;
-	printf("blink \n\r");
+	//printf("blink \n\r");
 	dele(1000000);
-	
-	
-	init_irq();
 	
 	while(1)
 	{
-		/*
-		FIO1PIN = FASA1;
+		FIO1PIN ^= FASA1;
 		dele(1000000);
-		printf("hidup\n\r");
-		FIO1PIN = ~FASA1 ;
-		dele(1000000);
-		printf("mati\n\r");
-		vTaskDelay(10);
-		*/
 		vTaskDelay(10);
 	}
 	
