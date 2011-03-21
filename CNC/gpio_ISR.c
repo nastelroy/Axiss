@@ -147,8 +147,7 @@ extern void gpio_ISR_Handler( void )
 			FIO1PIN = INPUT2 | INH2 | INH4 | INH5;
 			hitung = 0;
 		}
-		//IO2_INT_CLR = STEP;
-	
+		
 }
 	
 	
@@ -156,16 +155,3 @@ extern void gpio_ISR_Handler( void )
 	VICVectAddr = 0; // Acknowledge Interrupt
 
 }
-
-/*
-void blink()
-{
-	FIO1DIR = INH3;
-	while(1)
-	{
-	FIO1PIN ^= INH3;
-	vTaskDelay(1000);
-	}
-	
-}
-*/
