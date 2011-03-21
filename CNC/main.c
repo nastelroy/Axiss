@@ -1,15 +1,11 @@
-/*	Fana Akbarkan
- * 
- * 
- * 
- * Jakarta, 18 Maret 2011
- * Microstep , tapi masih sampe interrupt
- * 
- * 
- * 
- * 
- */
+/*
+	FreeRTOS.org V5.1.1 - Copyright (C) 2003-2008 Richard Barry.
+	
+	28 Juli 2009
+	blink + serial + FreeRTOS demo
+*/
 
+/* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -18,54 +14,53 @@
 
 #define BAUD_RATE	( ( unsigned portLONG ) 115200 )
 #define LED_UTAMA	BIT(26)
+#define INH3 BIT(21)
 
-#define FASA1 BIT(21)
-#define FASA2 BIT(11)
-#define SWPIN 11
+#define STEP BIT(11) //input step -->interrupt
+
+#define INPUT1 BIT(0) // port 1.0
+#define INPUT2 BIT(1) // port 1.1
+#define INPUT3 BIT(4) // port 1.4
+#define INPUT4 BIT(8) // port 1.8 
+#define INPUT5 BIT(9) // port 1.9
+
+// gunakan dulu sebagai input biasa, seharusnya sebagai PWM
+#define INH1 BIT(18) //port 1.18
+#define INH2 BIT(20) //port 1.20
+#define INH3 BIT(21) // port 1.21
+#define INH4 BIT(23) // port 1.23
+#define INH5 BIT(24) // port 1.24
 
 static int tog;
 
 /*-----------------------------------------------------------*/
-
-
-
-
-void dele(int dd)
-{
-	int g;
-	int i;
-	int dum;
-
-	for (i=0; i<dd; i++)
-	{
-		dum = FIO0DIR;
-	}
-}
-
-
-
-
+#define jalankan
 
 int main( void )
 {
 	sysInit();
 	
+	PINMODE2 = 0xFFFFFFFF;
+	PINMODE3 = 0xFFFFFFFF;
+	PINMODE4 = 0xFFFFFFFF;
 	
 	FIO0DIR = LED_UTAMA;
 	FIO0CLR = LED_UTAMA;	
 
 	xSerialPortInitMinimal( BAUD_RATE, configMINIMAL_STACK_SIZE  );
 
+#ifdef jalankan
 	init_led_utama();
 	init_task_serial();
 	init_task_cnc();
-	
+	init_irq();
 	
 	vTaskStartScheduler();
-	
+
     /* Will only get here if there was insufficient memory to create the idle
     task. */
 	return 0;
+#endif
 }
 
 
@@ -90,7 +85,7 @@ static portTASK_FUNCTION(task_led, pvParameters )
 	for (;;)
 	{
 		togle_led_utama();
-		vTaskDelay(100);
+		vTaskDelay(500);
 	}
 }
 void init_led_utama(void)
@@ -98,9 +93,6 @@ void init_led_utama(void)
 	xTaskCreate(task_led, ( signed portCHAR * ) "Led2",  (configMINIMAL_STACK_SIZE * 2) ,\
 		 NULL, tskIDLE_PRIORITY - 2, ( xTaskHandle * ) NULL );
 }
-
-
-
 
 
 static portTASK_FUNCTION(task_serial, pvParameters )
@@ -113,10 +105,9 @@ static portTASK_FUNCTION(task_serial, pvParameters )
     {
 	  	if (xSerialGetChar(1, &c, 100 ) == pdTRUE)
 	  	{
-	  		vSerialPutString(0, "dipencet = ");
+	  		vSerialPutString(0, "Tombol ditekan = ");
 	  		xSerialPutChar(	0, (char ) c);
 	  		vSerialPutString(0, " \r\n");
-	  		
 	  	}
 	}
 }
@@ -129,7 +120,6 @@ void init_task_serial(void)
 
 
 
-
 static portTASK_FUNCTION(task_cnc, pvParameters )
 {
 	cnc();
@@ -138,7 +128,7 @@ static portTASK_FUNCTION(task_cnc, pvParameters )
 	{
 		
 		
-		vTaskDelay(1);
+		vTaskDelay(100);
 	}
 	
 }
@@ -156,24 +146,17 @@ void init_task_cnc(void)
 void cnc(void)
 {
 	int a=0;
-	FIO1DIR = FASA1;
-
-	FIO1SET = FASA1;
-	//printf("blink \n\r");
-	dele(1000000);
+	FIO1DIR |=  INPUT1 | INPUT2 | INPUT3 | INPUT4 | INPUT5;
+	FIO1DIR |= INH1 | INH2 | INH3 | INH4 | INH5;
 	
-	FIO1CLR = FASA1;
-	//printf("blink \n\r");
-	dele(1000000);
-	
-	init_irq();
 	
 	while(1)
 	{
-		FIO1PIN ^= FASA1;
-		dele(1000000);
-		vTaskDelay(10);
+		
+		vTaskDelay(100);
+		
 	}
 	
 }
+
 

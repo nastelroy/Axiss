@@ -2,7 +2,7 @@
 #include "FreeRTOS.h"
 
 
-#define FASA1 BIT(21)
+
 #define STEP BIT(11)
 #define DIR BIT(12)  //input direction
 
@@ -22,11 +22,12 @@ extern void ( gpio_ISR_Wrapper)( void );
 	VICIntEnable = VIC_CHAN_TO_MASK(VIC_CHAN_NUM_EINT3);
 
 	// setup GPIO direction & interrupt
-	FIO2DIR =  0x1800 ;
+	FIO2DIR = FIO2DIR & ~(STEP | DIR) ;
 	
 	// enable falling edge interrupt
-	IO2_INT_EN_F = STEP;
+	IO2_INT_EN_R = STEP;
 
+	printf("telah init irq\n\r");
 	portEXIT_CRITICAL();
 	
 }
