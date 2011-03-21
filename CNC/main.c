@@ -59,14 +59,10 @@ int main( void )
 	init_led_utama();
 	init_task_serial();
 	init_task_cnc();
-	init_irq();
+	
 	
 	vTaskStartScheduler();
-	while (1)
-	{
-		
-	}
-
+	
     /* Will only get here if there was insufficient memory to create the idle
     task. */
 	return 0;
@@ -94,7 +90,7 @@ static portTASK_FUNCTION(task_led, pvParameters )
 	for (;;)
 	{
 		togle_led_utama();
-		vTaskDelay(1000);
+		vTaskDelay(100);
 	}
 }
 void init_led_utama(void)
@@ -161,7 +157,7 @@ void cnc(void)
 {
 	int a=0;
 	FIO1DIR = FASA1;
-	
+
 	FIO1SET = FASA1;
 	//printf("blink \n\r");
 	dele(1000000);
@@ -169,6 +165,8 @@ void cnc(void)
 	FIO1CLR = FASA1;
 	//printf("blink \n\r");
 	dele(1000000);
+	
+	init_irq();
 	
 	while(1)
 	{
