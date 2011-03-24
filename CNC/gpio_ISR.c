@@ -53,7 +53,7 @@ extern void gpio_ISR_Handler( void )
 	
 	hitung++;
 	
-	if (FIO2PIN & DIR )
+	if (IO2_INT_STAT_R & DIR )
 	{
 		if (hitung ==1)
 		{
@@ -151,7 +151,7 @@ extern void gpio_ISR_Handler( void )
 }
 	
 	
-	IO2_INT_CLR = STEP ;
+	IO2_INT_CLR = STEP | DIR ; // disable interrupt
 	VICVectAddr = 0; // Acknowledge Interrupt
 
 }

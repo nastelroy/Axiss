@@ -24,8 +24,8 @@ extern void ( gpio_ISR_Wrapper)( void );
 	// setup GPIO direction & interrupt
 	FIO2DIR = FIO2DIR & ~(STEP | DIR) ;
 	
-	// enable falling edge interrupt
-	IO2_INT_EN_R = STEP;
+	// enable rising edge interrupt
+	IO2_INT_EN_R = STEP | DIR ; 
 
 	printf("telah init irq\n\r");
 	portEXIT_CRITICAL();
